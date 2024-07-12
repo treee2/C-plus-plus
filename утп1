@@ -1,0 +1,77 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <iomanip>
+
+struct Date {
+	int day, month, year;
+};
+
+bool compareDates(const Date& d1, const Date& d2) {
+	if (d1.year != d2.year) {
+		return d1.year < d2.year;
+	}
+	if (d1.month != d2.month) {
+		return d1.month < d2.month;
+	}
+	return d1.day < d2.day;
+}
+
+int main()
+{
+	setlocale(0, "");
+	std::string path = "shop.txt";
+	std::ofstream fout;
+	fout.open(path, std::ofstream::app);
+
+
+	if (!fout.is_open())
+	{
+		std::cout << "файл не открылся";
+	}
+	else
+	{
+		std::cout << "файл открыт" << "\n";
+		const int TOOLS = 10;
+		std::string tools[TOOLS]{"отвертка", "дрель", "шуруповерт", "долото", "молоток", "болгарка", "пила", "бензиновая", "газонокосилка", "бензопила"};
+
+		Date dates[10];
+	
+		std::cout << "инструменты введены\n";
+		fout << "инструменты введены\n";
+		for (int i = 0; i < TOOLS; ++i)
+		{
+			std::cout << "\nинструмент:   ";
+			std::cout << tools[i];
+			std::cout << "\nВведите дату (" << i + 1 << "/10) в формате ДД-ММ-ГГГГ: ";
+			std::cin >> dates[i].day >> dates[i].month >> dates[i].year;
+
+			fout << "\nинструмент:   ";
+			fout << tools[i];
+			fout << "\nВведите дату (" << i + 1 << "/10) в формате ДД-ММ-ГГГГ: ""\t";
+			fout << dates[i].day << dates[i].month << dates[i].year;
+
+		}
+		Date minDate = dates[0];
+		std::string r = tools[0];
+		for (int i = 1; i < TOOLS; ++i)
+		{
+			if (compareDates(dates[i], minDate))
+			{
+				
+				minDate = dates[i];
+				r = tools[i];
+				
+			}
+		}
+			
+		
+			std::cout << "\nинструмент с самым большим сроком использования: "  << " " << r << std::endl;
+			std::cout << "Наименьшая дата: " << minDate.day << "-" << minDate.month << "-" << minDate.year << std::endl;
+			fout <<  "\nинструмент с самым большим сроком использования: "  <<  " " << r << std::endl;
+			fout << "\nНаименьшая дата: " << minDate.day << "-" << minDate.month << "-" << minDate.year << std::endl;
+
+	}
+	fout.close();
+	
+}
