@@ -1,0 +1,74 @@
+#include <iostream>
+
+template <typename T>
+class DynamicArray {
+private:
+    T* array;
+    int size;
+public:
+    
+    DynamicArray(T* items, int size) {
+        this->size = size;
+        array = new T[size];
+        for (int i = 0; i < size; i++) {
+            array[i] = items[i];
+        }
+    }
+
+    ~DynamicArray() {
+        delete[] array;
+    }
+
+    
+    void printArray() {
+        for (int i = 0; i < size; i++) {
+            std::cout << array[i] << " ";
+        }
+        std::cout << std::endl;
+    }
+
+    // формирования нового массива
+    DynamicArray<T>* createNewArray() {
+        if (size < 2) return new DynamicArray<T>(nullptr, 0); // Если в массиве меньше 2 элементов, возвращаем пустой массив
+
+        T* newArray = new T[size - 1];
+        for (int i = 0; i < size - 1; i++) {
+            newArray[i] = array[i] + array[i + 1];
+        }
+        return new DynamicArray<T>(newArray, size - 1);
+    }
+};
+
+int main() {
+       system("chcp 1251 > null");
+
+    
+    int arrInt[] = { 1, 2, 3, 4, 5 };
+    DynamicArray<int> intArray(arrInt, 5);
+    std::cout << "Исходный целочисленный массив: ";
+    intArray.printArray();
+    DynamicArray<int>* newArrayInt = intArray.createNewArray();
+    std::cout << "Преобразованный целочисленный массив: ";
+    newArrayInt->printArray();
+    delete newArrayInt; // Очистка памяти
+
+    
+    double arrDouble[] = { 1.1, 2.2, 3.3, 4.4 };
+    DynamicArray<double> doubleArray(arrDouble, 4);
+    std::cout << "Исходный вещественный массив: ";
+    doubleArray.printArray();
+    DynamicArray<double>* newArrayDouble = doubleArray.createNewArray();
+    std::cout << "Преобразованный вещественный массив: ";
+    newArrayDouble->printArray();
+    delete newArrayDouble; 
+
+    
+    char arrChar[] = { 'a', 'b', 'c', 'd' };
+    DynamicArray<char> charArray(arrChar, 4);
+    std::cout << "Исходный символьный массив: ";
+    charArray.printArray();
+    DynamicArray<char>* newArrayChar = charArray.createNewArray();
+    std::cout << "Преобразованный символьный массив: ";
+    newArrayChar->printArray();
+    delete newArrayChar; 
+}
