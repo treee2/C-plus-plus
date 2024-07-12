@@ -1,0 +1,49 @@
+#include <iostream>
+
+class X {
+protected:
+    int x1;
+    int x2;
+
+public:
+    X(int x1_val, int x2_val) : x1(x1_val), x2(x2_val) {}
+    virtual ~X() {}
+
+    virtual void viewState() const {
+        std::cout << "x1: " << x1 << ", x2: " << x2 << std::endl;
+    }
+
+    virtual void resetState(int new_x1, int new_x2) {
+        x1 = new_x1;
+        x2 = new_x2;
+    }
+};
+
+class Y : public X {
+private:
+    int y;
+
+public:
+    Y(int x1_val, int x2_val, int y_val) : X(x1_val, x2_val), y(y_val) {}
+
+    void viewState() const override {
+        std::cout << "x1: " << x1 << ", x2: " << x2 << ", y: " << y << std::endl;
+    }
+
+    void resetState(int new_x1, int new_x2, int new_y) {
+        x1 = new_x1;
+        x2 = new_x2;
+        y = new_y;
+    }
+
+    void Run() const {
+        int result = x1 * x2 + y;
+        std::cout << "x1*x2+y = " << result << std::endl;
+    }
+};
+
+int main() {
+    Y obj(3, 4, 5);
+    obj.viewState();
+    obj.Run();
+}
