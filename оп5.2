@@ -1,0 +1,122 @@
+#include <iostream>
+#include <fstream>
+#include <string>
+#include <stdexcept>
+
+class Component {
+protected:
+    std::string name;
+    std::string type;
+    std::string model;
+    double frequency;
+    double cost;
+    int quantity;
+
+public:
+    Component(const std::string& n, const std::string& t, const std::string& m, double f, double c, int q)
+        : name(n), type(t), model(m), frequency(f), cost(c), quantity(q) {}
+
+    virtual ~Component() {}
+
+    virtual void print(std::ostream& os) {
+        os << "Название: " << name << std::endl;
+        os << "Тип: " << type << std::endl;
+        os << "Модель: " << model << std::endl;
+        os << "Частота: " << frequency << " GHz" << std::endl;
+        os << "Цена: " << cost << std::endl;
+        os << "Количество: " << quantity << std::endl;
+    }
+
+    friend void Run(Component& comp) {
+        double totalCost = comp.cost * comp.quantity;
+        std::cout << "Финальная цена: " << totalCost << std::endl;
+    }
+};
+
+class MemoryComponent : virtual public Component {
+protected:
+    int memorySize;
+
+public:
+    MemoryComponent(const std::string& n, const std::string& t, const std::string& m, double f, int mem, double c, int q)
+        : Component(n, t, m, f, c, q), memorySize(mem) {}
+
+    void print(std::ostream& os) override {
+        Component::print(os);
+        os << "Размер памяти: " << memorySize << " GB" << std::endl;
+    }
+};
+
+class CostComponent : virtual public Component {
+protected:
+    double cost;
+
+public:
+    CostComponent(const std::string& n, const std::string& t, const std::string& m, double f, int mem, double c, int q)
+        : Component(n, t, m, f, c, q), cost(c) {}
+
+    void print(std::ostream& os) override {
+        Component::print(os);
+        os << "Цена: " << cost << std::endl;
+    }
+};
+
+class PC : public MemoryComponent, public CostComponent
+{
+public:
+    PC(const std::string& n, const std::string& t, const std::string& m, double f, int mem, double c, int q)
+        : Component(n, t, m, f, c, q), MemoryComponent(n, t, m, f, mem, c, q), CostComponent(n, t, m, f, mem, c, q) {}
+
+    void print(std::ostream& os) override
+    {
+        Component::print(os);
+        MemoryComponent::print(os);
+        os << "Финальная цена: " << cost * quantity << std::endl;
+    }
+};
+
+int main() {
+    system("chcp 1251 > null");
+    std::string name, type, model;
+    double frequency, cost;
+    int quantity, memorySize;
+
+    std::cout << "Введите название процессора: ";
+    std::getline(std::cin, name);
+    std::cout << "Введите модель процессора: ";
+    std::getline(std::cin, model);
+    std::cout << "Введите частоту процессора (ГГц): ";
+    if (!(std::cin >> frequency)) {
+        throw std::runtime_error("Ошибка ввода частоты процессора.");
+    }
+    std::cout << "Введите объем памяти процессора (ГБ): ";
+    if (!(std::cin >> memorySize)) {
+        throw std::runtime_error("Ошибка ввода объема памяти процессора.");
+    }
+    std::cout << "Введите стоимость процессора:";
+    if (!(std::cin >> cost)) {
+        throw std::runtime_error("Ошибка ввода стоимости процессора.");
+    }
+    std::cout << "Введите количество процессоров: ";
+    if (!(std::cin >> quantity)) {
+        throw std::runtime_error("Ошибка ввода количества процессоров.");
+    }
+    std::cin.ignore();
+
+    PC component(name, type, model, frequency, memorySize, cost, quantity);
+
+    try {
+        std::ofstream outputFile("components.txt");
+
+        if (!outputFile.is_open()) {
+            throw std::runtime_error("файл components не открылся");
+        }
+        component.print(outputFile);
+        outputFile.close();
+
+        component.print(std::cout);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Исключение: " << e.what() << std::endl;
+    }
+}
