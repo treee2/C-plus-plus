@@ -1,0 +1,82 @@
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <algorithm>
+
+class List
+{
+private:
+    std::vector<int> data;
+
+public:
+    void add(int Qdata)
+    {
+        data.push_back(Qdata);
+    }
+
+    void get()
+    {
+        for (int val : data)
+        {
+            std::cout << val << '\n';
+        }
+    }
+
+    void load(const std::string& filename)
+    {
+        std::ifstream file(filename);
+        int val;
+        while (file >> val)
+        {
+            data.push_back(val);
+        }
+        file.close();
+    }
+
+    List copy(int n)
+    {
+        List result;
+        std::vector<int> sortedData = data;
+        std::sort(sortedData.begin(), sortedData.end(), std::greater<int>()); // greater для вывода чисел в порядке убывания
+
+        for (int i = 0; i < std::min(n, static_cast<int>(sortedData.size())); ++i)
+        {
+            result.add(sortedData[i]);
+        }
+
+        return result;
+    }
+
+    void saveToFile(const std::string& filename)
+    {
+        std::ofstream file(filename);
+        for (int val : data)
+        {
+            file << val << '\n';
+        }
+        file.close();
+    }
+};
+
+int main()
+{
+    setlocale(0, "");
+    List uu;
+    List tt;
+
+    std::string filename = "data.txt";
+    uu.load(filename); // Загружаем данные из файла
+
+    std::cout << "List1: \n";
+    uu.get();
+
+    int n;
+    std::cout << "Сколько наибольших чисел скопировать: ";
+    std::cin >> n;
+
+    tt = uu.copy(n);
+
+    std::cout << "\nList2 (первые " << n << " наибольших чисел из List1): \n";
+    tt.get();
+}
+
