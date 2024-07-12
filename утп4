@@ -1,0 +1,145 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Person {
+private:
+    std::string sex, name, surname;
+    int age;
+
+public:
+    Person(std::string Qsex, std::string Qname, std::string Qsurname, int Qage)
+    {
+        sex = Qsex; name = Qname; surname = Qsurname; age = Qage;
+        get();
+    }
+
+    Person()
+    {
+        message();
+        std::cout << '\n';
+    }
+
+    void get()
+    {
+        std::cout << sex << " " << name << " " << surname << " " << age << " лет\n==============================\n";
+    }
+
+    void message()
+    {
+        std::cout << "Данные людей\n";
+    }
+
+    std::string getName() 
+    {
+        return name;
+    }
+
+    void setName(std::string newName) 
+    {
+        name = newName;
+    }
+};
+
+class Stack {
+private:
+    std::vector<Person> stack;
+
+public:
+    void add(Person newPerson)
+    {
+        stack.push_back(newPerson);  // добавление
+    }
+
+    void remove()
+    {
+        if (!stack.empty())
+        {
+            stack.pop_back();  // удаление с помощью синтаксиса векторов
+        }
+        else
+        {
+            std::cout << "Стек пуст, в нем нечего удалять\n";
+        }
+    }
+
+    void modify(int index, std::string newSex, std::string newName, std::string newSurname, int newAge)
+    {
+        if (index >= 0 and index < stack.size())
+        {
+            stack[index] = Person(newSex, newName, newSurname, newAge);
+            std::cout << "Элемент с индексом " << index << " успешно изменен.\n";
+        }
+        else
+        {
+            std::cout << "Ошибка: Неверный индекс для изменения элемента.\n";
+        }
+    }
+
+    void display()
+    {
+        std::cout << "Изменения:\n";
+        for (int i = 0; i < stack.size(); ++i) {
+            std::cout << "Изменения для элемента " << i << ": " << stack[i].getName() << std::endl;
+        }
+    }
+};
+
+int main() {
+    setlocale(0, "");
+    Stack person;
+
+    Person perl("мужчина", "иван", "макаров", 10);
+    person.add(perl);
+    Person per("женщина", "марина", "елисеева", 13);
+    person.add(per);
+    Person perl1("женщина", "александра", "тамилина", 23);
+    person.add(perl1);
+    int action = 0;
+
+    do {
+        std::cout << "Выберите действие:\n1 - Добавить элемент\n2 - Удалить последний элемент\n3 - Изменить элемент по индексу\n4 - Просмотреть изменения\n5 - Выход\n";
+        std::cin >> action;
+
+        switch (action) {
+        case 1: {
+            std::string newSex, newName, newSurname;
+            int newAge;
+
+            std::cout << "Введите пол, имя, фамилию и возраст для нового элемента:\n";
+            std::cin >> newSex >> newName >> newSurname >> newAge;
+
+            Person newPerson(newSex, newName, newSurname, newAge);
+            person.add(newPerson);
+            break;
+        }
+        case 2:
+            person.remove(); // удаление последнего элемента
+            break;
+        case 3: {
+            int index;
+            std::string newSex, newName, newSurname;
+            int newAge;
+
+            std::cout << "Введите индекс элемента для изменения:\n";
+            std::cin >> index;
+            std::cout << "Введите новый пол, имя, фамилию и возраст для элемента:\n";
+            std::cin >> newSex >> newName >> newSurname >> newAge;
+
+            person.modify(index, newSex, newName, newSurname, newAge);
+            break;
+        }
+        case 4:
+            person.display(); // отображение изменений
+            break;
+        case 5:
+            std::cout << "Программа завершена\n";
+            break;
+        default:
+            std::cout << "Неверное действие.\n";
+            break;
+        }
+    } while (action != 5);
+
+}
+
