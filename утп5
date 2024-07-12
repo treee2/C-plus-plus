@@ -1,0 +1,95 @@
+#include <fstream>
+#include <iostream>
+#include <vector>
+#include <string>
+
+class Student {
+public:
+    Student(std::string name, int age) : name(name), age(age) {}
+    virtual std::string getInfo() // будет использована постоянно во всех наследниках через override
+    {
+        return "Имя: " + name + ", Возраст: " + std::to_string(age);
+    }
+protected:
+    std::string name;
+    int age;
+};
+
+class Schoolchild : public Student 
+{
+public:
+    Schoolchild(std::string name, int age, std::string grade) : Student(name, age), grade(grade) {}
+    std::string getInfo() override 
+    {
+        return "Школьник: " + Student::getInfo() + ", Класс: " + grade;
+    }
+private:
+    std::string grade;
+};
+
+class University_Student : public Student
+{
+public:
+    University_Student(std::string name, int age, std::string university) : Student(name, age), university(university) {}
+    std::string getInfo() override
+    {
+        return "Студент: " + Student::getInfo() + ", Университет: " + university;
+    }
+private:
+    std::string university;
+};
+
+
+int main() {
+    setlocale(0, "");
+    std::vector<Student*> students = {
+        new Schoolchild("Иван", 15, "9A"),
+        new Schoolchild("Мария", 14, "8B"),
+        new University_Student("Алексей", 20, "МГУ"),
+        new University_Student("Елена", 19, "СпбГУ")
+    };
+
+    std::cout << "Информация о школьниках:" << std::endl;
+    for (Student* s : students)
+    {
+        if (dynamic_cast<Schoolchild*>(s) != nullptr) // преобразование типа данных для 
+                                                      //проверки принадлежности к классу школьника
+        {
+            std::cout << s->getInfo() << std::endl;
+        }
+    }
+
+        std::cout << "\nИнформация о студентах:" << std::endl;
+        for (Student* s : students) 
+        {
+            if (dynamic_cast<University_Student*>(s) != nullptr)
+            {
+                std::cout << s->getInfo() << std::endl;
+            }
+        }
+        std::string path = "students_data.txt";
+        std::ofstream outFile;
+        outFile.open(path, std::ofstream::app);
+        
+        if (!outFile.is_open())
+        {
+            std::cerr << "Не удалось открыть файл!" << std::endl;
+            return 1;
+        }
+
+        else {
+            for (Student* s : students)
+            {
+                outFile << s->getInfo() << std::endl;
+            }
+        }
+
+        outFile.close();
+
+            for (Student* s : students)
+            {
+                delete s;
+            }
+
+    
+    }
