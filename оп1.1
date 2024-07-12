@@ -1,0 +1,30 @@
+#include <iostream>
+class Square {
+private:
+	float wide;
+	float lonng;
+public:
+	Square(float Qwide, float Qlonng) {
+		wide = Qwide; lonng = Qlonng;
+		massege();
+	}
+	void massege()
+	{
+		std::cout << "Вычисление площади и периметра:\n";;
+	}
+	void get()
+	{
+		std::cout << "площадь: " << wide << " * " << lonng << " = " << wide * lonng
+			<< "\nпериметр: " << "2 * " << "(" << wide << "+" << lonng << ")" << " = " << 2*(wide*lonng);
+	}
+	~Square()
+	{
+		std::cout << "\nпрограмма завершена "; // работа декструтора
+	}
+};
+int main()
+{
+	setlocale(0, "");
+	Square yy(5.44, 4.22);
+	yy.get(); // или можно добавить get() в КОНCТРУКТОР и избавиться от этой строчки
+}
