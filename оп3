@@ -1,0 +1,101 @@
+#include <iostream>
+using namespace std;
+
+class Zoopark {
+public:
+    string zooname;
+    Zoopark() {}
+    Zoopark(string name) : zooname(name) {}
+
+    void displayZoopark() {
+        cout << "Название зоопарка: " << zooname << endl;
+    }
+};
+
+class Cell : public Zoopark {
+public:
+    int cellNumber, cageSize, max_zhiv, real_zhiv;
+    Cell() {}
+    Cell(int number, int size, int max, int real) : cellNumber(number), cageSize(size), max_zhiv(max), real_zhiv(real) {}
+
+    void displayCell() {
+        cout << "Номер клетки: " << cellNumber << endl;
+        cout << "Размер клетки: " << cageSize << endl;
+        cout << "Максимальная вместимость клетки: " << max_zhiv << endl;
+        cout << "Реальное количество животных в клетке: " << real_zhiv << endl;
+    }
+};
+
+class Animal : public Cell {
+public:
+    string interspecific; // межвидовость
+    string nameBeast;
+    Animal() {}
+    Animal(int number, int size, int max, int real, string name, string intersp) : Cell(number, size, max, real), nameBeast(name), interspecific(intersp) {}
+
+    void displayAnimal() {
+        cout << "Название животного: " << nameBeast << endl;
+        cout << "Хищник: " << interspecific << endl;
+    }
+};
+
+class Fish : public Animal {
+public:
+    string boolean; //глубоководность
+    Fish() {}
+    Fish(int number, int size, int max, int real, string name, string intersp, string bool_val) : Animal(number, size, max, real, name, intersp), boolean(bool_val) {}
+
+    void displayFish() {
+        cout << "Глубоководная рыба: " << boolean << endl;
+    }
+};
+
+class Bird : public Animal {
+public:
+    int speed;
+    Bird() {}
+    Bird(int number, int size, int max, int real, string name, string intersp, int spd) : Animal(number, size, max, real, name, intersp), speed(spd) {}
+
+    void displayBird() {
+        cout << "Скорость полёта птицы: " << speed << " км/ч" << endl;
+    }
+};
+
+class Beast : public Animal {
+public:
+    string sreda;
+    Beast() {}
+    Beast(int number, int size, int max, int real, string name, string intersp, string habitat) : Animal(number, size, max, real, name, intersp), sreda(habitat) {}
+
+    void displayBeast() {
+        cout << "Среда обитания зверя: " << sreda << endl;
+    }
+};
+
+int main() {
+    setlocale(0, "");
+
+    Zoopark inf("ZOO");
+
+    Beast ee(1, 10, 20, 15, "Лев", "да", "Саванна");
+    Bird dd(2, 5, 10, 8, "Орел", "да", 150);
+    Fish aa(3, 3, 8, 5, "Карп", "нет", "неглубоководная");
+
+    inf.displayZoopark();
+    cout << endl;
+
+    ee.displayCell();
+    ee.displayAnimal();
+    ee.displayBeast();
+    cout << endl;
+
+    dd.displayCell();
+    dd.displayAnimal();
+    dd.displayBird();
+    cout << endl;
+
+    aa.displayCell();
+    aa.displayAnimal();
+    aa.displayFish();
+}
+
