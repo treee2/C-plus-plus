@@ -1,0 +1,19 @@
+#include <iostream>
+#include <list>
+
+int main() {
+	std::list<int> lst;
+	
+	for (int i = -100; i < -60; ++i)
+	{
+		if (i > -85 and i < -70)
+		{
+			lst.push_front(i);
+		}
+		
+	}	
+	for(auto elem = lst.cbegin(); elem != lst.cend(); ++elem)
+	{
+		std::cout << *elem << "  ";
+	}
+}
