@@ -1,0 +1,146 @@
+#include <iostream>
+#include <vector>
+#include <memory>
+#include <stdexcept>
+
+class Shape {
+public:
+    virtual void draw() const = 0; // Чисто виртуальная функция для демонстрации
+    virtual ~Shape() = default;
+};
+
+class Ellipse : public Shape {
+public:
+    void draw() const override {
+        std::cout << "=================" << "\nСоздан эллипс" << '\n';
+    }
+};
+
+class Square : public Shape {
+public:
+    void draw() const override {
+        std::cout << "=================" << "\nСоздан квадрат" << '\n';
+    }
+};
+
+class Triangle : public Shape {
+public:
+    void draw() const override {
+        std::cout << "=================" << "\nСоздан треугольник" << '\n';
+    };};
+
+template <typename T>
+class Collection {
+private:
+    std::vector<std::unique_ptr<T>> items;
+
+public:
+    void add(T* item) {
+        items.push_back(std::unique_ptr<T>(item));
+    }
+
+    void insert(size_t index, T* item) {
+        if (index <= items.size()) {
+            items.insert(items.begin() + index, std::unique_ptr<T>(item));
+        }
+        else {
+            throw std::out_of_range("Индекс вне диапазона");
+        }
+    }
+
+    void remove(size_t index) {
+        if (index < items.size()) {
+            items.erase(items.begin() + index);
+        }
+        else {
+            throw std::out_of_range("Индекс вне диапазона");
+        }
+    }
+
+    T& operator[](size_t index) {
+        if (index < items.size()) {
+            return *items[index];
+        }
+        else {
+            throw std::out_of_range("Индекс вне диапазона");
+        }
+    }
+
+    size_t size() const {
+        return items.size();
+    }
+
+    void truncate(size_t newSize) {
+        if (newSize < items.size()) {
+            items.resize(newSize);
+        }
+        else {
+            throw std::invalid_argument("Новое количество должно быть меньше текущего размера");
+        }
+    }
+};
+
+void showMenu() {
+    std::cout << "1. Добавить элллипс\n";
+    std::cout << "2. Добавить квадрат\n";
+    std::cout << "3. Добавить треугольник\n";
+    std::cout << "4. Все фигуры\n";
+    std::cout << "5. Удаление фигуры\n";
+    std::cout << "7. Усечение коллекции\n";
+    std::cout << "8. Выход\n";
+    std::cout << "Выберите число: ";
+}
+
+int main() {
+    std::locale::global(std::locale(""));
+    Collection<Shape> collection;
+    int choice;
+
+    do {
+        showMenu();
+        std::cin >> choice;
+        switch (choice) {
+        case 1:
+            collection.add(new Ellipse());
+            break;
+        case 2:
+            collection.add(new Square());
+            break;
+        case 3:
+            collection.add(new Triangle());
+            break;
+        case 4:
+            for (size_t i = 0; i < collection.size(); ++i) {
+                collection[i].draw();
+            }
+            break;
+        case 5:
+            std::cout << "Введите индекс для удаления: ";
+            size_t index;
+            std::cin >> index;
+            try {
+                collection.remove(index);
+            }
+            catch (const std::out_of_range& e) {
+                std::cout << "поймано исключение: " << e.what() << std::endl;
+            }
+            break;
+        case 7:
+            size_t newSize;
+            std::cout << "Введите новое количество фигур: ";
+            std::cin >> newSize;
+            try {
+                collection.truncate(newSize);
+            }
+            catch (const std::invalid_argument& e) {
+                std::cout << "поймано исключение: " << e.what() << std::endl;
+            }
+            break;
+        case 8:
+            std::cout << "Выход\n";
+            break;
+        default:
+            std::cout << "Ошибка.\n";
+        }
+    } while (choice != 8);
+}
