@@ -1,0 +1,101 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Person {
+private:
+    std::string sex, name, surname;
+    int age;
+public:
+    Person(std::string Qsex, std::string Qname, std::string Qsurname, int Qage) 
+    {
+        sex = Qsex; name = Qname; surname = Qsurname; age = Qage;
+        get();
+    }
+
+    Person() 
+    {
+        massage();
+        std::cin >> sex >> name >> surname >> age;
+        std::cout << '\n' << sex << "  " << name
+            << "  " << surname << "  " << age
+            << " лет\n" << "==============================\n";
+
+    }
+    void get() 
+    {
+        std::cout
+            << sex << "  " << name
+            << "  " << surname << "  " << age
+            << " лет\n" << "==============================\n";
+    }
+    void massage()
+    {
+        std::cout << "\nДанные людей(пол, имя, фамилия, возраст)\n";
+    }
+};
+
+int main() {
+    setlocale(0, "");
+
+    std::vector<Person> males;
+    std::vector<Person> females;
+    std::vector<Person> people;
+    Person perl("мужчина", "иван", "макаров", 10);
+    males.push_back(perl);
+
+    Person per("женщина", "марина", "елисеева", 13);
+    females.push_back(per);
+
+    Person perl1("женщина", "александра", "тамилина", 23);
+    females.push_back(perl1);
+
+    Person perl2("мужчина", "дмитрий", "каспаров", 25);
+    males.push_back(perl2);
+
+    people.push_back(perl);
+    people.push_back(per);
+    people.push_back(perl1);
+    people.push_back(perl2);
+
+    int choice = 0;
+    do {
+        std::cout 
+            << "\nВыберите действие:\n1 - список мужчин\n2 - Cписок женщин\n3 - Cписок всех\n4 - Выход\n";
+        std::cin >> choice;
+
+        switch (choice)
+        {
+        case 1:
+            std::cout << "Мужчины:\n";
+            for (auto& male : males) 
+            {
+                male.get();
+            }
+            break;
+        case 2:
+            std::cout << "Женщины:\n";
+            for (auto& female : females) 
+            {
+                female.get();
+            }
+            break;
+        case 3:
+            std::cout << "Все люди:\n";
+            for (auto& pi : people)
+            {
+                pi.get();
+            }
+            break;
+        case 4: 
+            std::cout << "программа завершена";
+            break;
+        default:
+            std::cout << "нет такого ответа";
+            break;
+        }
+
+    } while (choice != 4);
+
+}
+ 
