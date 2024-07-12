@@ -1,0 +1,118 @@
+#include <iostream>
+#include <string>
+#include <fstream>
+
+class B1 {
+private:
+    std::string passportData;
+    std::string email;
+    std::string SNILS;
+
+protected:
+    B1(std::string pass, std::string email, std::string snils)
+        : passportData(pass), email(email), SNILS(snils) {}
+
+    void showPassportData(std::ostream& os)
+    {
+        os << "Защищенные данные B1 относящиеся к паспорту: " << passportData << '\n';
+    }
+
+    void showEmail(std::ostream& os)
+    {
+        os << "Почта из B1: " << email << '\n';
+    }
+
+    void showSnils(std::ostream& os)
+    {
+        os << "СНИЛС из B1:" << SNILS << '\n';
+    }
+};
+
+class B2 {
+private:
+    std::string phone;
+    std::string address;
+
+protected:
+    B2(std::string value, std::string addr) : phone(value), address(addr) {}
+
+    void showPhone(std::ostream& os) {
+        os << "Защищенные данные B2 относящиеся к телефону: " << phone << '\n';
+    }
+
+    void showAddress(std::ostream& os) {
+        os << "Адрес из B2: " << address << '\n';
+    }
+};
+
+class D1 : private B1, public B2 {
+public:
+    D1(std::string passport, std::string email, std::string snils, std::string phone, std::string address)
+        : B1(passport, email, snils), B2(phone, address) {}
+
+    void show(std::ostream& os)
+    {
+        showPassportData(os);
+        showEmail(os);
+        showSnils(os);
+        showPhone(os);
+        showAddress(os);
+        os << "-------------вызов D2------------------\n";
+    }
+};
+
+class D2 : private B2, public B1 {
+public:
+    D2(std::string passport, std::string email, std::string snils, std::string iphone, std::string address)
+        : B1(passport, email, snils), B2(iphone, address) {}
+
+    void show(std::ostream& os)
+    {
+        showPassportData(os);
+        showEmail(os);
+        showSnils(os);
+        showPhone(os);
+        showAddress(os);
+    }
+};
+
+class D3 : private D2, public D1 {
+public:
+    D3(std::string passportB1, std::string emailB1, std::string snilsB1, std::string iphoneB2, std::string addressB2, std::string passportD1, std::string emailD1, std::string snilsD1, std::string iphoneD2, std::string addressD2)
+        : D2(passportB1, emailB1, snilsB1, iphoneB2, addressB2), D1(passportD1, emailD1, snilsD1, iphoneD2, addressD2) {}
+
+    void show(std::ostream& os)
+    {
+        D1::show(os);
+        D2::show(os);
+    }
+};
+
+int main() {
+    std::locale::global(std::locale("")); // Установка локали
+    D3 person("123456789\n", "Sechenow1@simple.ru\n", "123-333-345\n", "8 987 654-32-10\n", "Адрес 1: ул.Суворова 33\n", "15 18 456789\n", "email223523@intermidiete.com\n", "123-111-111\n", "8 987 654 32 11\n", "Адрес ул.Ленина 108\n");
+    //person.show(std::cout);
+    // Запись в файл
+    std::ofstream outfile("output.txt");
+    if (outfile.is_open()) {
+        person.show(outfile);
+        outfile.close();
+        std::cout << "----------------------------\nДанные записаны в файл output.txt\n";
+    }
+    else {
+        std::cerr << "Ошибка открытия файла для записи.\n";
+    }
+    // Чтение из файла
+    std::ifstream infile("output.txt");
+    if (infile.is_open()) {
+        std::cout << "\nСодержимое файла output.txt:\n";
+        std::string line;
+        while (std::getline(infile, line)) {
+            std::cout << line << '\n';
+        }
+        infile.close();
+    }
+    else {
+        std::cerr << "Ошибка открытия файла для чтения.\n"; // стандартный поток ошибок для вывода ошибок в C++
+    }
+}
