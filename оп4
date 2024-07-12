@@ -1,0 +1,223 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+
+using namespace std;
+
+class Software {
+public:
+    virtual void displayInfo() = 0;
+    virtual bool canBeUsedOnCurrentDate() = 0;
+    virtual int CompareTo(const Software& other) const = 0;
+    virtual ~Software() {}
+};
+
+class FreeSoftware : public Software {
+private:
+    string name;
+    string manufacturer;
+
+public:
+    FreeSoftware(const string& name, const string& manufacturer) : name(name), manufacturer(manufacturer) {}
+
+    void displayInfo() override {
+        cout << "Бесплатное программное обеспечение: " << name << " (" << manufacturer << ")" << endl;
+    }
+
+    bool canBeUsedOnCurrentDate() override {
+        // Предположим, что всегда можно использовать для примера
+        return true;
+    }
+
+    int CompareTo(const Software& other) const override {
+        return name.compare(static_cast<const FreeSoftware&>(other).name);
+    }
+};
+
+class SharewareSoftware : public Software {
+private:
+    string name;
+    string manufacturer;
+    string installDate;
+    int freeUsagePeriod; // в днях
+
+public:
+    SharewareSoftware(const string& name, const string& manufacturer, const string& installDate, int freeUsagePeriod) 
+        : name(name), manufacturer(manufacturer), installDate(installDate), freeUsagePeriod(freeUsagePeriod) {}
+
+    void displayInfo() override {
+        cout << "Условно-бесплатное программное обеспечение: " << name << " (" << manufacturer << "), установлено: " << installDate << endl;
+    }
+
+    bool canBeUsedOnCurrentDate() override {
+        // Спрашиваем у пользователя о дате и проверяем, истек ли период бесплатного использования
+        string currentDate;
+        cout << "Введите текущую дату (ДД-ММ-ГГГГ): ";
+        cin >> currentDate;
+
+        // Преобразуем даты в формате ДД-ММ-ГГГГ в числа для сравнения
+        int installDay, installMonth, installYear;
+        int currentDay, currentMonth, currentYear;
+        sscanf_s(installDate.c_str(), "%2d-%2d-%4d", &installDay, &installMonth, &installYear);
+        sscanf_s(currentDate.c_str(), "%2d-%2d-%4d", &currentDay, &currentMonth, &currentYear);
+
+        // Вычисляем разницу между датами в днях
+        int daysDiff = (currentYear - installYear) * 365 + (currentMonth - installMonth) * 30 + (currentDay - installDay);
+
+        return daysDiff <= freeUsagePeriod;
+    }
+
+    int CompareTo(const Software& other) const override {
+        return name.compare(static_cast<const SharewareSoftware&>(other).name);
+    }
+};
+
+class ProprietarySoftware : public Software {
+private:
+    string name;
+    string manufacturer;
+    double price;
+    string installDate;
+    int usagePeriod; // в днях
+
+public:
+    ProprietarySoftware(const string& name, const string& manufacturer, double price, const string& installDate, int usagePeriod) 
+        : name(name), manufacturer(manufacturer), price(price), installDate(installDate), usagePeriod(usagePeriod) {}
+
+    void displayInfo() override {
+        cout << "Проприетарное программное обеспечение: " << name << " (" << manufacturer << "), цена: $" << price << endl;
+    }
+
+    bool canBeUsedOnCurrentDate() override {
+        // Спрашиваем у пользователя о дате и проверяем, истек ли
+        // период использования
+        string currentDate;
+        cout << "Введите текущую дату (ДД-ММ-ГГГГ): ";
+        cin >> currentDate;
+
+        // Преобразуем даты в формате ДД-ММ-ГГГГ в числа для сравнения
+        int installDay, installMonth, installYear;
+        int currentDay, currentMonth, currentYear;
+        sscanf_s(installDate.c_str(), "%2d-%2d-%4d", &installDay, &installMonth, &installYear);
+        sscanf_s(currentDate.c_str(), "%2d-%2d-%4d", &currentDay, &currentMonth, &currentYear);
+
+        // Вычисляем разницу между датами в днях
+        int daysDiff = (currentYear - installYear) * 365 + (currentMonth - installMonth) * 30 + (currentDay - installDay);
+
+        return daysDiff <= usagePeriod;
+    }
+
+    int CompareTo(const Software& other) const override {
+        return name.compare(static_cast<const ProprietarySoftware&>(other).name);
+    }
+};
+
+int main() {
+    std::locale::global(std::locale("")); // новая локаль
+    vector<Software*> softwareArray;
+
+    int choice = 0;
+    while (choice != 7) {
+        cout << "Меню:" << endl;
+        cout << "1. Добавить бесплатное программное обеспечение" << endl;
+        cout << "2. Добавить условно-бесплатное программное обеспечение" << endl;
+        cout << "3. Добавить проприетарное программное обеспечение" << endl;
+        cout << "4. Вывести информацию о всех программных продуктах" << endl;
+        cout << "5. Сортировать по названию" << endl;
+        cout << "6. Поиск по названию" << endl;
+        cout << "7. Выйти" << endl;
+        
+        cout << "Выберите действие: ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                string name, manufacturer;
+                cout << "Введите название бесплатного программного обеспечения: ";
+                cin >> name;
+                cout << "Введите производителя: ";
+                cin >> manufacturer;
+                softwareArray.push_back(new FreeSoftware(name, manufacturer));
+                break;
+            }
+            case 2: {
+                string name, manufacturer, installDate;
+                int freeUsagePeriod;
+                cout << "Введите название условно-бесплатного программного обеспечения: ";
+                cin >> name;
+                cout << "Введите производителя: ";
+                cin >> manufacturer;
+                cout << "Введите дату установки (ДД-ММ-ГГГГ): ";
+                cin >> installDate;
+                cout << "Введите период бесплатного использования (в днях): ";
+                cin >> freeUsagePeriod;
+                softwareArray.push_back(new SharewareSoftware(name, manufacturer, installDate, freeUsagePeriod));
+                break;
+            }
+            case 3: {
+                string name, manufacturer, installDate;
+                double price;
+                int usagePeriod;
+                cout << "Введите название проприетарного программного обеспечения: ";
+                cin >> name;
+                cout << "Введите производителя: ";
+                cin >> manufacturer;
+                cout << "Введите цену: $";
+                cin >> price;
+                cout << "Введите дату установки (ДД-ММ-ГГГГ): ";
+                cin >> installDate;
+                cout << "Введите период использования (в днях): ";
+                cin >> usagePeriod;
+                softwareArray.push_back(new ProprietarySoftware(name, manufacturer, price, installDate, usagePeriod));
+                break;
+            }
+            case 4: {
+                cout << "Информация о всех программных продуктах:" << endl;
+                for (const auto& software : softwareArray) {
+                    software->displayInfo();
+                }
+                break;
+            }
+            case 5: {
+                sort(softwareArray.begin(), softwareArray.end(), [](Software* a, Software* b) {
+                    return a->CompareTo(*b) < 0;
+                });
+
+                cout << "Программные продукты отсортированы по названию." << endl;
+                break;
+            }
+            case 6: {
+                string searchName;
+                cout << "Введите название для поиска: ";
+                cin >> searchName;
+
+                cout << "Результаты поиска:" << endl;
+                bool found = false;
+                for (const auto& software : softwareArray) {
+                    if (software->CompareTo(*new FreeSoftware(searchName, "")) == 0) {
+                        if (software->canBeUsedOnCurrentDate()) {
+                            software->displayInfo();
+                            found = true;
+                        }
+                    }
+                }
+
+                if (!found) {
+                    cout << "Программное обеспечение с названием '" << searchName << "' не найдено или не может быть использовано на текущую дату." << endl;
+                }
+                break;
+            }
+            case 7:
+                cout << "Выход из программы." << endl;
+                break;
+            default:
+                cout << "Неверный выбор. Попробуйте снова." << endl;
+        }
+    }
+
+    // Освобождение памяти, выделенной для объектов
+    for (const auto& software : softwareArray) {
+        delete software;
+    }
+}
