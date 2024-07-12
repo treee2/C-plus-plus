@@ -1,0 +1,222 @@
+#include <iostream>
+#include <vector>
+#include <fstream>
+#include <sstream>
+#include <algorithm>
+
+class Train {
+public:
+    std::string destination; // Пункт назначения.
+    int trainNumber; // Номер поезда.
+    std::string departureTime; // Время отправления.
+    int commonSeats; // Количество общих мест.
+    int coupeSeats; // Количество купейных мест.
+    int reservedSeats; // Количество плацкартных мест.
+
+    Train(std::string dest, int num, std::string time, int general, int coupe, int reserved)
+        : destination(dest), trainNumber(num), departureTime(time),
+        commonSeats(general), coupeSeats(coupe), reservedSeats(reserved) {}
+
+    
+    virtual void printInfo() const
+    {
+        std::cout << "Пункт назначения: " << destination
+            << ", Номер поезда: " << trainNumber
+            << ", Время отправления: " << departureTime
+            << ", Общие места: " << commonSeats
+            << ", Купейные места: " << coupeSeats
+            << ", Плацкартные места: " << reservedSeats << std::endl;
+    }
+
+    // Перегрузка оператора ввода
+    friend std::istream& operator>>(std::istream& is, Train& train) {
+        return is >> train.destination >> train.trainNumber >> train.departureTime
+            >> train.commonSeats >> train.coupeSeats >> train.reservedSeats;
+    }
+
+    // Перегрузка оператора вывода
+    friend std::ostream& operator<<(std::ostream& os, const Train& train) {
+        return os << train.destination << " " << train.trainNumber << " " << train.departureTime << " "
+            << train.commonSeats << " " << train.coupeSeats << " " << train.reservedSeats;
+    }
+};
+
+std::vector<Train> read(const std::string& fileName) {
+    std::vector<Train> trains;
+    std::ifstream file(fileName);
+    if (!file.is_open()) {
+        throw std::runtime_error("Не удалось открыть файл на моменте открытия");
+    }
+
+    Train train("", 0, "", 0, 0, 0);
+    while (file >> train) { // из файла читаются поезда
+        trains.push_back(train);
+    }
+
+    file.close();
+    return trains;
+}
+
+void write(const std::vector<Train>& trains, const std::string& fileName) {
+    std::ofstream file(fileName);
+    if (!file.is_open()) {
+        throw std::runtime_error("Не удалось открыть файл для записи");
+    }
+
+    for (const auto& train : trains) {
+        file << train << std::endl; // а тут записываются
+    }
+
+    file.close();
+}
+
+// Функция для фильтрации поездов по пункту назначения
+std::vector<Train> filterByDestination(const std::vector<Train>& trains, const std::string& destination) {
+    std::vector<Train> filteredTrains;
+    std::copy_if(trains.begin(), trains.end(), std::back_inserter(filteredTrains),
+        [&destination](const Train& train) { return train.destination == destination; });
+    return filteredTrains;
+}
+
+// Функция для фильтрации поездов по пункту назначения и времени отправления
+std::vector<Train> filterByDestinationAndTime(const std::vector<Train>& trains, const std::string& destination,
+    const std::string& time) {
+    std::vector<Train> filteredTrains;
+    std::copy_if(trains.begin(), trains.end(), std::back_inserter(filteredTrains),
+        [&](const Train& train) {
+            return train.destination == destination && train.departureTime > time;
+        });
+    return filteredTrains;
+}
+
+// Функция для фильтрации поездов по пункту назначения и наличию общих мест
+std::vector<Train> filterByDestinationAndGeneralSeats(const std::vector<Train>& trains,
+    const std::string& destination) {
+    std::vector<Train> filteredTrains;
+    std::copy_if(trains.begin(), trains.end(), std::back_inserter(filteredTrains),
+        [&](const Train& train) {
+            return train.destination == destination && train.commonSeats > 0;
+        });
+    return filteredTrains;
+}
+
+void addTrain(std::vector<Train>& trains) {
+    std::string destination, time;
+    int number, general, coupe, reserved;
+
+    std::cout << "Введите пункт назначения: "; std::getline(std::cin, destination);
+
+    std::cout << "Введите номер поезда: ";
+    std::cin >> number;
+    std::cin.ignore(); 
+
+    std::cout << "Введите время отправления (ЧЧ:ММ): ";
+    std::getline(std::cin, time);
+
+    std::cout << "Введите количество общих мест: ";
+    std::cin >> general;
+
+    std::cout << "Введите количество купейных мест: ";
+    std::cin >> coupe;
+
+    std::cout << "Введите количество плацкартных мест: ";
+    std::cin >> reserved;
+    std::cin.ignore(); // Игнорирование оставшегося символа новой строки
+
+    // Добавление нового поезда в вектор
+    trains.emplace_back(destination, number, time, general, coupe, reserved);
+
+    // Открытие файла для записи
+    std::ofstream file("trains.txt", std::ios::app);
+    if (!file.is_open()) {
+        std::cerr << "Не удалось открыть файл для записи." << std::endl;
+        return;
+    }
+
+    // Запись нового поезда в файл
+    file << trains.back() << std::endl;
+    file.close();
+    std::cout << "Поезд успешно добавлен.\n";
+}
+
+int main() {
+    std::locale::global(std::locale(""));
+
+    try {
+        std::vector<Train> trains = read("trains.txt");
+        std::string destination, time;
+        int choice;
+
+        do {
+            std::cout << "\nВыберите действие:\n";
+            std::cout << "1) Показать поезда до пункта назначения\n";
+            std::cout << "2) Показать поезда до пункта назначения после заданного времени\n";
+            std::cout << "3) Показать поезда до пункта назначения с общими местами\n";
+            std::cout << "4) Добавить новый поезд\n";
+            std::cout << "5) Выход\n";
+            std::cout << "Ваш выбор: ";
+            std::cin >> choice;
+            std::cin.ignore();
+
+            switch (choice) {
+            case 1: {
+                std::cout << "Введите пункт назначения: ";
+                std::getline(std::cin, destination);
+                std::vector<Train> filteredTrains = filterByDestination(trains, destination);
+                if (!filteredTrains.empty()) {
+                    for (const auto& train : filteredTrains) {
+                        train.printInfo();
+                    }
+                }
+                else {
+                    std::cout << "Поездов до " << destination << " не найдено." << std::endl;
+                }
+                break;
+            }
+            case 2: {
+                std::cout << "Введите пункт назначения и время отправления (ЧЧ:ММ):\n ";
+                std::getline(std::cin, destination);
+                std::getline(std::cin, time);
+                std::vector<Train> filteredTrains = filterByDestinationAndTime(trains, destination, time);
+                if (!filteredTrains.empty()) {
+                    for (const auto& train : filteredTrains) {
+                        train.printInfo();
+                    }
+                }
+                else {
+                    std::cout << "Поездов до " << destination << " после " << time
+                        << " не найдено\n";
+                }
+                break;
+            }
+            case 3: {
+                std::cout << "Введите пункт назначения: ";
+                std::getline(std::cin, destination);
+                std::vector<Train> filteredTrains = filterByDestinationAndGeneralSeats(trains, destination);
+                if (!filteredTrains.empty()) {
+                    for (const auto& train : filteredTrains) {
+                        train.printInfo();
+                    }
+                }
+                else {
+                    std::cout << "Поездов до " << destination << " с общими местами не найдено." << std::endl;
+                }
+                break;
+            }
+            case 4:
+                addTrain(trains);
+                break;
+            case 5:
+                std::cout << "Выход из программы.\n";
+                write(trains, "trains.txt"); // Сохранение изменений в файл
+                break;
+            default:
+                std::cout << "Неправильный выбор. Попробуйте еще раз.\n";
+            }
+        } while (choice != 5);
+    }
+    catch (const std::exception& e) {
+        std::cerr << "Произошла ошибка: " << e.what() << std::endl;
+    }
+}
+
