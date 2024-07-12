@@ -1,0 +1,140 @@
+
+#include <string.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+struct DateOfCreation {
+	int day;
+	int month;
+	int year;
+};
+struct DateOfChange {
+	int day;
+	int month;
+	int year;
+};
+class File {
+private:
+	DateOfCreation t;
+	DateOfChange r;
+	std::string name;
+	std::string type;
+	int size;
+	int chislo;
+public:
+	File(std::string Qname, std::string Qtype, int Qsize, int Qchislo,
+		DateOfCreation Qt, DateOfChange Qr) {
+		t = Qt; r = Qr; name = Qname; type = Qtype; size = Qsize; chislo =
+			Qchislo;
+		message();
+		get(); // конструктор с 5 параметрами и + 2 функции
+	}
+	void message()
+	{
+		std::cout << "все известные данные файла\n";
+	}
+	void get()
+	{
+		std::cout << "название файла: " << name << "\nтип файла: " << type
+			<< "\nразмер файла: " << size
+			<< "\nчисло обращений: " << chislo << "\nдата создания: "
+			<< t.day << "." << t.month << "." << t.year
+			<< "\nдата изменения: " << r.day << "." << r.month << "."
+			<< r.year << "\n=====================\n";
+	}
+	std::string alf() // для алфавита 
+	{
+		return name;
+	}
+	std::int64_t sizee()
+	{
+		return size;
+	}
+	std::int64_t chisloo()
+	{
+		return chislo;
+	}
+};
+bool alfabet(File& fill, File& fill2) // &надо чтобы избежать копирования и всё
+{
+	return (fill.alf() < fill2.alf()); //функция для алфавита
+}
+bool bySize(File& r, File& w) // работаю с параметрами которые будут пренадлежать классу File
+{
+return (r.sizee() < w.sizee()); // для веса
+}
+bool dom(File& u, File y)
+{
+	return (u.chisloo() < y.chisloo()); //для обращений
+}
+int main() {
+	setlocale(0, "");
+	char choice;
+	DateOfCreation dt{ 1, 1, 2000 }; // обозначение структуры всегда в {}
+	DateOfChange de{ 2,1, 2002 };
+	File m("tanku", "txt", 200, 16, dt, de);
+	DateOfCreation ww{ 1, 1, 2000 };
+	DateOfChange ee{ 12, 10 , 2024 };
+	File k("assasin", "doc", 1200, 36, ww, ee);
+	DateOfCreation tt{ 22, 03, 2021 };
+	DateOfChange qq{ 27, 8, 2023 };
+	File y("elder ring", "jpg", 288, 2, tt, qq);
+	DateOfCreation gg{ 2, 9, 2019 };
+	DateOfChange bb{ 3, 9 ,2019 };
+	File v("spider-man", "wma", 69, 9, gg, bb);
+	DateOfCreation uu{ 16, 11, 2009 };
+	DateOfChange cc{ 17, 11, 2009 }; // структура только {}
+	File j("call of duty", "jpeg", 800, 12, uu, cc);
+	std::vector<File> hranilishe;
+	hranilishe.push_back(m);
+	hranilishe.push_back(k);
+	hranilishe.push_back(y);
+	hranilishe.push_back(v);
+	hranilishe.push_back(j);
+	std::cout << "\nвведите a, b, c: ";
+	std::cin >> choice;
+	switch (choice)
+	{
+	case 'a':
+		std::sort(hranilishe.begin(), hranilishe.end(), alfabet); // сортировка из библиотеки alghorit
+			std::cout << "\nпо алфавиту\n";
+		for (auto& file : hranilishe)
+		{
+			file.get(); // работа в цикле
+		}
+		break;
+	case 'b':
+		int e;
+		std::cout << "\nвведите ограничение: ";
+		std::cin >> e;
+		std::sort(hranilishe.begin(), hranilishe.end(), bySize);
+		std::cout << "\nпо весу\n";
+		for (auto& elem : hranilishe)
+		{
+			if (elem.sizee() > e)
+				
+			{
+			elem.get();
+			}
+		}
+		break;
+	case 'c':
+		int b;
+		std::cout << "\nвведите ограничение: ";
+		std::cin >> b;
+		std::sort(hranilishe.begin(), hranilishe.end(), dom);
+		std::cout << "\nдля сортировки по числу обращений\n";
+		for (auto& fila : hranilishe)
+		{
+			if (fila.chisloo() > b)
+			{
+				fila.get(); // написать ограничение
+			}
+		}
+		break;
+	default:
+		std::cout << "ERROR";
+	}
+}
+
+
