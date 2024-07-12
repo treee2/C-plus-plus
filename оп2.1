@@ -1,0 +1,116 @@
+#include <string>
+#include <iostream>
+#include <vector>
+#include <algorithm> // Для использования std::sort
+
+class List
+{
+private:
+    struct Node
+    {
+        int data;
+        Node* link;
+    };
+    Node* head;
+
+public:
+    List() : head(nullptr) {}
+
+    void add(int Qdata)
+    {
+        Node* nd = new Node;
+        nd->data = Qdata;
+        nd->link = head;
+        head = nd;
+    }
+    void add()
+    {
+        int Qdata;
+
+        while (true)
+        {
+            std::string userInput;
+            std::getline(std::cin, userInput);
+
+            if (userInput.empty())
+            {
+                break;
+            }
+
+            Qdata = std::stoi(userInput);
+            Node* nd = new Node;
+            nd->data = Qdata;
+            nd->link = head;
+            head = nd;
+        }
+    }
+
+    void get()
+    {
+        Node* current = head;
+        while (current)
+        {
+            std::cout << current->data << '\n';
+            current = current->link;
+        }
+    }
+
+    List* copy(int n)  // Копирование самых больших чисел в новый список
+    {
+        List* result = new List();
+        std::vector<int> elem;
+
+        Node* current = head;
+        while (current)
+        {
+            elem.push_back(current->data);
+            current = current->link;
+        }
+
+        std::sort(elem.begin(), elem.end(), std::greater<int>());
+
+        for (int i = 0; i < std::min(n, static_cast<int>(elem.size())); ++i)
+        {
+            result->add(elem[i]);
+        }
+
+        return result;
+    }
+
+    ~List()
+    {
+        Node* current = head;
+        while (current)
+        {
+            Node* temp = current;
+            current = current->link;
+            delete temp;
+        }
+    }
+};
+
+int main() {
+    setlocale(0, "");
+    List uu;
+    List* tt;
+
+    uu.add();
+    uu.add();
+    uu.add();
+    uu.add();
+    uu.add();
+    uu.add();
+
+    std::cout << "List1: \n";
+    uu.get();
+
+    int n;
+    std::cout << "Сколько наибольших чисел скопировать: ";
+    std::cin >> n;
+
+    tt = uu.copy(n);
+
+    std::cout << "\nList2 (первые " << n << " наибольших чисел из List1): \n";
+    tt->get(); // вызов функции через указатель
+
+}
